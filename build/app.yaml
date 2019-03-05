@@ -1,0 +1,51 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: barn-pi-node-express
+  labels:
+    app: barn-pi-node-express
+spec:
+  type: LoadBalancer
+  selector:
+    app: barn-pi-node-express
+  ports:
+  - port: 8080
+    nodePort: 31102
+    targetPort: 8080
+    name: http
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: barn-pi-node-express
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: barn-pi-node-express
+        version: v1
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: barn-pi-node-express
+        image: phx.ocir.io/toddrsharp/barn-automation/barn-pi-node-express:latest
+        env:
+          - name: TNS_ADMIN
+            value: /opt/oracle/network/admin
+          - name: ATP_USER
+            valueFrom:
+              secretKeyRef:
+                name: barn-pi-node-express-secrets
+                key: atpUser
+          - name: ATP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: barn-pi-node-express-secrets
+                key: atpPassword
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: regcred
+---
