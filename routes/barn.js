@@ -3,9 +3,9 @@ const router = express.Router();
 const BarnService = require('../service/barn-service.js');
 const barnService = new BarnService();
 const asyncHandler = require('express-async-handler')
-const MessageProducer = require('../service/kafka/message-producer-service.js');
+const MessageProducer = require('../service/streaming/message-producer-service.js');
 const config = require('../utils/config.js');
-const producer = new MessageProducer(config.inTopicName, config.kafkaIncomingBootstrapServer);
+const producer = new MessageProducer(config.incomingStreamId);
 const SSE = require('sse');
 const cors = require('cors');
 

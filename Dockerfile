@@ -1,4 +1,6 @@
-FROM node:10.14.1
+FROM node:10.15.3-stretch-slim
+
+COPY .oci /.oci
 
 # Install Oracle client
 RUN mkdir -p opt/oracle
@@ -22,8 +24,8 @@ RUN yarn config set ignore-engines true
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm install
 COPY . .
+RUN npm install
 
 ENV PORT 8080
 

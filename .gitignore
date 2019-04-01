@@ -68,3 +68,7 @@ typings/
 # next.js build output
 .next
 
+.oci
+lib/oci-node-sdk/conf
+lib/oci-node-sdk/docs
+lib/oci-node-sdk/jsdoc-template

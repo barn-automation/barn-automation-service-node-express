@@ -1,7 +1,5 @@
 const config = {};
-config.inTopicName = "incoming";
-config.outTopicName = "outgoing";
-config.kafkaOutgoingBootstrapServer = "129.146.79.59:6667";
-config.kafkaIncomingBootstrapServer = "129.146.79.59:6667";
+config.outgoingStreamId = "ocid1.stream.oc1.phx.aaaaaaaad5puzckqz7r6ty72c7dkw7koqbtoo2uh4g53ww5lpvd6gplcpqba";
+config.incomingStreamId = "ocid1.stream.oc1.phx.aaaaaaaatu2umvjwt7jybgxrjbkdpsjasl7xyrmzcnw62rsw3e6r6rlpakmq";
 
 module.exports = config;

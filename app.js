@@ -5,7 +5,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const barnRouter = require('./routes/barn');
 const config = require('./utils/config.js');
-const MessageConsumer = require('./service/kafka/message-consumer-service.js');
+const MessageConsumer = require('./service/streaming/message-consumer-service.js');
 const SSE = require('sse');
 
 
@@ -26,7 +26,7 @@ app.get('/', (req, res, next) => {
 
 app.use('/barn', barnRouter);
 
-const consumer = new MessageConsumer(config.outTopicName, config.kafkaOutgoingBootstrapServer, app);
+const consumer = new MessageConsumer(config.outgoingStreamId, app);
 consumer.start();
 
 module.exports = app;
