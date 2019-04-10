@@ -36,10 +36,10 @@ module.exports = class MessageConsumer {
                                         msg = JSON.parse(msg);
                                         console.log(`[INFO] Received: `, msg);
                                         const evt = new BarnEvent(null, msg.type, JSON.stringify(msg.data), new Date());
-                                        barnService.save(evt);
                                         if( evt.type != 'CAMERA_0' ) {
                                             this.expressApp.emit('incomingMessage', { message: { type: evt.type, capturedAt: evt.capturedAt, data: evt.data }, timestamp: evt.capturedAt });
                                         }
+                                        barnService.save(evt);
                                     }
                                     catch(ex) {
                                         console.error(ex);
@@ -52,7 +52,7 @@ module.exports = class MessageConsumer {
                             getMessagesRequest.cursor = getMessageResult.headers['opc-next-cursor'];
                         })
                         .catch((err) => console.log(err));
-                }, 1000);
+                }, 500);
             })
             .catch((err) => console.error(err));
     }

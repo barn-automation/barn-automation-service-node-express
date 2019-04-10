@@ -47,7 +47,7 @@ module.exports = class CameraConsumer {
                             getMessagesRequest.cursor = getMessageResult.headers['opc-next-cursor'];
                         })
                         .catch((err) => console.log(err));
-                }, 1000);
+                }, 500);
             })
             .catch((err) => console.error(err));
     }
