@@ -42,7 +42,6 @@ module.exports = class BarnService {
     }
 
     save(barnEvent) {
-        console.log('saving...')
         this.pool.getConnection().then( (conn) => {
             conn.execute("insert into BARN.BARN_EVENT (TYPE, DATA, CAPTURED_AT) values (:type, :data, to_timestamp(:capturedAt, 'yyyy-mm-dd HH24:mi:ss'))",
                 {
