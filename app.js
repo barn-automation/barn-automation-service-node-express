@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const barnRouter = require('./routes/barn');
 const config = require('./utils/config.js');
 const MessageConsumer = require('./service/streaming/message-consumer-service.js');
+const CameraConsumer = require('./service/streaming/camera-consumer-service.js');
 const SSE = require('sse');
 
 
@@ -26,7 +27,10 @@ app.get('/', (req, res, next) => {
 
 app.use('/barn', barnRouter);
 
-const consumer = new MessageConsumer(config.outgoingStreamId, app);
-consumer.start();
+const messageConsumer = new MessageConsumer(config.outgoingStreamId, app);
+messageConsumer.start();
+
+const cameraConsumer = new CameraConsumer(config.cameraStreamId, app);
+cameraConsumer.start();
 
 module.exports = app;

@@ -4,6 +4,7 @@ const BarnService = require('../service/barn-service.js');
 const barnService = new BarnService();
 const asyncHandler = require('express-async-handler')
 const MessageProducer = require('../service/streaming/message-producer-service.js');
+const MessageConsumer = require('../service/streaming/message-consumer-service.js');
 const config = require('../utils/config.js');
 const producer = new MessageProducer(config.incomingStreamId);
 const SSE = require('sse');
@@ -61,20 +62,19 @@ router.get('/stream', cors(), (req, res, next) => {
 
     const messageHandler = (data) => {
         client.send(JSON.stringify({
-            message: {
-                type: data.message.type,
-                capturedAt: data.message.capturedAt,
-                data: JSON.parse(data.message.data)
-            },
-            timestamp: data.timestamp
+            type: data.message.type,
+            capturedAt: data.message.capturedAt,
+            data: JSON.parse(data.message.data)
         }));
     };
 
     res.app.on('incomingMessage', messageHandler);
+    res.app.on('cameraMessage', messageHandler);
 
     res.on('close', () => {
         console.log('closing...')
         res.app.removeListener('incomingMessage', messageHandler);
+        res.app.removeListener('cameraMessage', messageHandler);
         client.close();
     });
 

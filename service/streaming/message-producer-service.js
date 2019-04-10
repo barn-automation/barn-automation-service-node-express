@@ -14,7 +14,7 @@ module.exports = class MessageProducer {
 
     send(msg) {
         const messages = [];
-        messages.push( new PutMessagesDetailsEntry( Buffer.from(msg).toString('base64') ) );
+        messages.push( new PutMessagesDetailsEntry( Buffer.from(JSON.stringify(msg)).toString('base64') ) );
 
         const putMessagesDetails = new PutMessagesDetails(messages);
         const putMessagesRequest = new PutMessagesRequest(this.streamId, putMessagesDetails);

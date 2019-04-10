@@ -1,15 +1,13 @@
-const BarnService = require('../barn-service.js');
-const barnService = new BarnService();
 const BarnEvent = require('../../model/barn-event.js');
 
 const ConfigFileAuthProvider = require('oci-node-sdk/src/codes/recursive/auth/ConfigFileAuthProvider.js');
 const StreamingClient = require('oci-node-sdk/src/codes/recursive/client/StreamingClient.js');
-const CreateGroupCursorRequest = require('oci-node-sdk/src/codes/recursive/model/streaming/CreateGroupCursorRequest.js');
-const CreateGroupCursorDetails = require('oci-node-sdk/src/codes/recursive/model/streaming/CreateGroupCursorDetails.js');
+const CreateCursorRequest = require('oci-node-sdk/src/codes/recursive/model/streaming/CreateCursorRequest.js');
+const CreateCursorDetails = require('oci-node-sdk/src/codes/recursive/model/streaming/CreateCursorDetails.js');
 const GetMessagesRequest = require('oci-node-sdk/src/codes/recursive/model/streaming/GetMessagesRequest.js');
 const configAuthProvider = new ConfigFileAuthProvider(process.env.OCI_CONFIG_PATH || '~/.oci/config');
 
-module.exports = class MessageConsumer {
+module.exports = class CameraConsumer {
 
     constructor(streamId, app) {
         this.streamId = streamId;
@@ -19,10 +17,10 @@ module.exports = class MessageConsumer {
     }
 
     start() {
-        const createGroupCursorDetails = new CreateGroupCursorDetails('TRIM_HORIZON', 'group-0', null, null, null, true);
-        const createGroupCursorRequest = new CreateGroupCursorRequest(this.streamId, createGroupCursorDetails);
+        const createCursorDetails = new CreateCursorDetails('0', 'LATEST');
+        const createCursorRequest = new CreateCursorRequest(this.streamId, createCursorDetails);
 
-        this.client.createGroupCursor(createGroupCursorRequest)
+        this.client.createCursor(createCursorRequest)
             .then((cursorResult) => {
                 const getMessagesRequest = new GetMessagesRequest(this.streamId, cursorResult.body.value);
                 this.consumerInterval = setInterval(() => {
@@ -36,10 +34,7 @@ module.exports = class MessageConsumer {
                                         msg = JSON.parse(msg);
                                         console.log(`[INFO] Received: `, msg);
                                         const evt = new BarnEvent(null, msg.type, JSON.stringify(msg.data), new Date());
-                                        barnService.save(evt);
-                                        if( evt.type != 'CAMERA_0' ) {
-                                            this.expressApp.emit('incomingMessage', { message: { type: evt.type, capturedAt: evt.capturedAt, data: evt.data }, timestamp: evt.capturedAt });
-                                        }
+                                        this.expressApp.emit('cameraMessage', { message: { type: evt.type, capturedAt: evt.capturedAt, data: evt.data }, timestamp: evt.capturedAt });
                                     }
                                     catch(ex) {
                                         console.error(ex);
