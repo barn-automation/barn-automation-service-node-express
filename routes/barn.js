@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const BarnService = require('../service/barn-service.js');
-const barnService = new BarnService();
 const asyncHandler = require('express-async-handler')
 const MessageProducer = require('../service/streaming/message-producer-service.js');
-const MessageConsumer = require('../service/streaming/message-consumer-service.js');
 const config = require('../utils/config.js');
 const producer = new MessageProducer(config.incomingStreamId);
 const SSE = require('sse');
@@ -18,32 +15,32 @@ router.get('/', cors(), asyncHandler( async (req, res, next) => {
 
 router.get('/events/type/:type', cors(), asyncHandler( async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
-    res.send( JSON.stringify( await barnService.listEventsByEventType(req.params.type) ) );
+    res.send( JSON.stringify( await res.app.get('barnService').listEventsByEventType(req.params.type) ) );
 }));
 
 router.get('/events/type/:type/:offset/:max', cors(), asyncHandler( async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
-    res.send( JSON.stringify( await barnService.listEventsByEventType(req.params.type, req.params.offset, req.params.max) ) );
+    res.send( JSON.stringify( await res.app.get('barnService').listEventsByEventType(req.params.type, req.params.offset, req.params.max) ) );
 }));
 
 router.get('/events/count/:type', cors(), asyncHandler( async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
-    res.send( JSON.stringify( { total: await barnService.countEventsByEventType(req.params.type) } ) );
+    res.send( JSON.stringify( { total: await res.app.get('barnService').countEventsByEventType(req.params.type) } ) );
 }));
 
 router.get('/events/count', cors(), asyncHandler( async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
-    res.send( JSON.stringify( { total: await barnService.countEvents() } ) );
+    res.send( JSON.stringify( { total: await res.app.get('barnService').countEvents() } ) );
 }));
 
 router.get('/events/:offset/:max', cors(), asyncHandler( async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
-    res.send( JSON.stringify( await barnService.listEvents(req.params.offset, req.params.max) ) );
+    res.send( JSON.stringify( await res.app.get('barnService').listEvents(req.params.offset, req.params.max) ) );
 }));
 
 router.get('/events', cors(), asyncHandler( async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
-    res.send( JSON.stringify( await barnService.listEvents() ) );
+    res.send( JSON.stringify( await res.app.get('barnService').listEvents() ) );
 }));
 
 // enable pre-flight check for POST

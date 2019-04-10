@@ -1,5 +1,4 @@
-const BarnService = require('../barn-service.js');
-const barnService = new BarnService();
+
 const BarnEvent = require('../../model/barn-event.js');
 
 const ConfigFileAuthProvider = require('oci-node-sdk/src/codes/recursive/auth/ConfigFileAuthProvider.js');
@@ -11,8 +10,9 @@ const configAuthProvider = new ConfigFileAuthProvider(process.env.OCI_CONFIG_PAT
 
 module.exports = class MessageConsumer {
 
-    constructor(streamId, app) {
+    constructor(streamId, barnService, app) {
         this.streamId = streamId;
+        this.barnService = barnService;
         this.expressApp = app;
         this.consumerInterval = null;
         this.client = new StreamingClient(configAuthProvider, 'us-phoenix-1');
@@ -39,7 +39,12 @@ module.exports = class MessageConsumer {
                                         if( evt.type != 'CAMERA_0' ) {
                                             this.expressApp.emit('incomingMessage', { message: { type: evt.type, capturedAt: evt.capturedAt, data: evt.data }, timestamp: evt.capturedAt });
                                         }
-                                        barnService.save(evt);
+                                        try {
+                                            this.barnService.save(evt)
+                                        }
+                                        catch(e) {
+                                            console.log(e)
+                                        }
                                     }
                                     catch(ex) {
                                         console.error(ex);
