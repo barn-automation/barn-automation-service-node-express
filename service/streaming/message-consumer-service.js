@@ -29,7 +29,7 @@ module.exports = class MessageConsumer {
                     //console.log(`${new Date()}[INFO] Checking ${this.streamId}`)
                     this.client.getMessages(getMessagesRequest)
                         .then((getMessageResult) => {
-                            if( getMessageResult.body.length ) {
+                            if( getMessageResult.hasOwnProperty("body") && getMessageResult.body.length ) {
                                 getMessageResult.body.forEach((el, i) => {
                                     let msg = Buffer.from(el.value, 'base64').toString('binary');
                                     try {
