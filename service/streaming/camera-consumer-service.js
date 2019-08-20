@@ -33,7 +33,7 @@ module.exports = class CameraConsumer {
                                     try {
                                         msg = JSON.parse(msg);
                                         console.log(`[INFO] Received: `, msg);
-                                        const evt = new BarnEvent(null, msg.type, JSON.stringify(msg.data), new Date());
+                                        const evt = new BarnEvent(null, msg.type, JSON.stringify(msg.data), 'node-express', new Date());
                                         this.expressApp.emit('cameraMessage', { message: { type: evt.type, capturedAt: evt.capturedAt, data: evt.data }, timestamp: evt.capturedAt });
                                     }
                                     catch(ex) {

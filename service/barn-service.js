@@ -43,10 +43,11 @@ module.exports = class BarnService {
 
     save(barnEvent) {
         this.pool.getConnection().then( (conn) => {
-            conn.execute("insert into BARN.BARN_EVENT (TYPE, DATA, CAPTURED_AT) values (:type, :data, to_timestamp(:capturedAt, 'yyyy-mm-dd HH24:mi:ss'))",
+            conn.execute("insert into BARN.BARN_EVENT (TYPE, DATA, SOURCE, CAPTURED_AT) values (:type, :data, :source, to_timestamp(:capturedAt, 'yyyy-mm-dd HH24:mi:ss'))",
                 {
                     type: barnEvent.type,
                     data: barnEvent.data,
+                    source: barnEvent.source,
                     capturedAt: dateFormat(barnEvent.capturedAt, 'yyyy-mm-dd HH:MM:ss'),
                 }
             ).then( (result) => {
@@ -95,7 +96,7 @@ module.exports = class BarnService {
     }
     async listEvents(offset=0,max=50) {
         const connection = this.getConnection();
-        const result = await connection.execute("select * from BARN_EVENT OFFSET :offset ROWS FETCH NEXT :max ROWS ONLY",
+        const result = await connection.execute("select * from BARN_EVENT ORDER BY CAPTURED_AT desc OFFSET :offset ROWS FETCH NEXT :max ROWS ONLY",
             {
                 max: max,
                 offset: offset
@@ -105,6 +106,7 @@ module.exports = class BarnService {
             return {
                 id: row.ID,
                 type: row.TYPE,
+                source: row.SOURCE,
                 data: JSON.parse(row.DATA),
                 capturedAt: row.CAPTURED_AT
             }
